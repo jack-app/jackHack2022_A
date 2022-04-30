@@ -3,14 +3,33 @@
 {% block content %}
 <button onclick="addImage()">オノマトペを追加</button>
 <div id="images">
-  <img src="/static/image/image.png" alt="">
+  <img src="/static/image/dan.png" alt="">
 </div>
 
 <ul id="onomatopoeia">
   <li>どんどん</li>
 </ul>
 
+<div id="musics">
+  {% for music in music_choices %}
+  <iframe width="150" height="100" src="{{music}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  {% endfor %}
+</div>
+
 <script>
+  // insertMusics()
+  // function insertMusics() {
+  //   const div = document.getElementById("musics")
+  //   let iframe = document.createElement("iframe")
+  //   iframe.width = '150'
+  //   iframe.height = '100'
+  //   iframe.src = 'https://www.youtube.com/embed/VfATdDI3604'
+  //   iframe.title = 'YouTube video player'
+  //   iframe.frameborder='0'
+  //   iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+  //   div.appendChild(iframe)
+  // }
+
   function getImage(){
     //画像ファイル名を配列で保持
     var arr = ['/static/image/image.png', '/static/image/image2.png'];

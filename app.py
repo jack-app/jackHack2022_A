@@ -12,8 +12,8 @@ socketio = SocketIO(app)
 user_count = 0
 users = {}
 rooms={}
-musics=[]
-onomatope=[]
+musics=["https://www.youtube.com/embed/rwkLzrK5GLA", "https://www.youtube.com/embed/IFCDLIKSArs", "https://www.youtube.com/embed/qivRUhepWVA", "https://www.youtube.com/embed/q09Gs6e5XVI", "https://www.youtube.com/embed/VfATdDI3604"] # もう少しだけまで https://www.youtube.com/embed/fxE176w8Z90
+onomatope=["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
 
 @app.route('/index')
 def index():
@@ -34,13 +34,19 @@ def room():
     # roomに入る処理
     room_id = request.args.get("q")
     if room_id not in rooms:
-        rooms[room_id] = {"users": [], "is_game_started": False} #TODO: roomがなければ作っちゃう, 本番でで消す
+        #TODO: 最初にstart_gameされたタイミングでgame_countをインクリメント。毎回選択肢が変われば成功。
+        rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
         # abort(400, 'this room not found') 
     in_room(user["user_id"], room_id)
 
     # roomがゲーム中か否かの処理
     if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
-        content = render_template("room_gaming.html", me=user)
+        room = rooms[room_id]
+        user_candidate_id = random.choice(room["users"])
+        user_candidate = users[user_candidate_id]
+        music_choices = room["games"][room["game_count"]]["music_choices"]
+        print(music_choices)
+        content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices)
     else:    
         content = render_template("room_waiting.html", me=user)
 
@@ -84,8 +90,8 @@ def create_user(name):
 
 #roomに入る処理
 def in_room(user_id,room_id):
-    if len(rooms[room_id]) == 4:
-        abort(400, 'this room is empty') 
+    if len(rooms[room_id]["users"]) == 4:
+        abort(400, 'this room is full') 
     # users[user_id]["room"]=room_id
     rooms[room_id]["users"].append(user_id)
 
