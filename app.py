@@ -141,5 +141,17 @@ def test_connect():
 def test_disconnect():
     print('Client disconnected')
 
+@socketio.on('user_join')
+def user_join(data):
+    emit("user_join",{"data":users[data["user_id"]]},namespace=f'room_id-{data["room_id"]}',broadcast=True)
+
+@socketio.on('start_game')
+def start_game(room_id):
+    emit("start_game",{"data":""},namespace=f'room_id-{room_id}',broadcast=True)
+
+
+def test_result(room_id):
+    emit("game_result",{'data':[users[user_id]["point"]for user_id in rooms[room_id]]},broadcast=True)
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', debug=True)
