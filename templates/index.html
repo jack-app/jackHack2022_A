@@ -20,6 +20,11 @@
       console.log(message)
     })
 
+    roomSocket = io.connect(`http://localhost:5000/room_id-${room_id}`);
+  roomSocket.on("connect", function() {
+    console.log("room connected")
+  })
+
 function buttonClick() {
   socket.emit("message", "hogehoge")
 }
