@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block stylesheet%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/room.css') }}">
+{% endblock %}
+
+{% block body %}
+  <content>
+    {% block content %}
+
+    {% endblock %}
+  </content>
+  <p>{{ me["user_id"] }}</p>
+
+  <div class="members">
+    <div class="member-box">
+      user A
+    </div>
+    <div class="member-box">
+      user B
+    </div>
+    <div class="member-box">
+      user C
+    </div>
+    <div class="member-box">
+      user D
+    </div>
+  </div>
+{% endblock %}
