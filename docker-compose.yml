@@ -3,9 +3,10 @@ version: '3'
 services:
   app:
     build: .
-    command: python hono.py
+    command: python app.py
     tty: true
+    working_dir: /app
     volumes:
-      - ./:/usr/src/app
+      - ./:/app
     ports:
       - "5000:5000"
