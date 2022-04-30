@@ -1,0 +1,7 @@
+.member-box {
+  border: 1px solid;
+}
+
+.members {
+  display: flex;
+}

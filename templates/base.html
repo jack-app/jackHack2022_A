@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>{{the_title}}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    {% block stylesheet%}
+    {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+
+  <body>
+    <header class="header">
+      <p>header</p>
+    </header>
+
+    <body>
+      <section class="section">
+        <div class="container">
+          {% block body%}
+
+          {% endblock %}
+        </div>
+      </section>
+    </body>
+
+    <footer>
+      <p>footer</p>
+    </footer>
+  </body>
+
+
+</html>

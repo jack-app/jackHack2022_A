@@ -1,0 +1,11 @@
+header {
+  background-color: blue;
+}
+
+footer {
+  background-color: yellow;
+}
+
+html {
+  max-height: 100vh;
+}

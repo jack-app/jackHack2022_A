@@ -1,4 +1,5 @@
-from flask import Flask, render_template, jsonify,request
+from datetime import datetime
+from flask import Flask, render_template, jsonify,request, make_response, abort
 from flask_socketio import SocketIO, send, emit
 import uuid
 import random
@@ -17,19 +18,40 @@ onomatope=[]
 def index():
     return render_template('index.html') # templatesフォルダ内のindex.htmlを表示する
 
-#ユーザーを作成
-@app.route('/user_create')
-def user_create():
-    name='Anonymous'
-    try:
-        req = request.args
-        name = req.get("name")
-    except:
-        pass
-    user_id = uuid.uuid4()
-    users[user_id]={"name": name,"room":None,"point":0}
-    print(users)
-    return jsonify(user_id=user_id)
+@app.route("/room", methods=['GET'])
+def room():
+    # userの登録処理
+    if request.cookies.get('uid') is None:
+        name='Anonymous'
+        q_name = request.args.get("name")
+        if q_name is None:
+            name = q_name
+        user = create_user(name)
+    else:
+        user = users[request.cookies.get('uid')]
+    
+    # roomに入る処理
+    room_id = request.args.get("q")
+    if room_id not in rooms:
+        rooms[room_id] = {"users": [], "is_game_started": False} #TODO: roomがなければ作っちゃう, 本番でで消す
+        # abort(400, 'this room not found') 
+    in_room(user["user_id"], room_id)
+
+    # roomがゲーム中か否かの処理
+    if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
+        content = render_template("room_gaming.html", me=user)
+    else:    
+        content = render_template("room_waiting.html", me=user)
+
+    # make_responseでレスポンスオブジェクトを生成する
+    response = make_response(content)
+
+    # Cookieの設定を行う
+    max_age = 60 * 60 * 24 * 120 # 120 days
+    expires = int(datetime.now().timestamp()) + max_age
+    response.set_cookie('uid', value=str(user["user_id"]), max_age=max_age, expires=expires, secure=None, httponly=False)
+
+    return response
 
 #ルームを作成
 @app.route('/room_create')
@@ -52,9 +74,18 @@ def user_answer():
 def select_onomatopoeia(onmatopoeia):
     return 
 
+#userの作成
+def create_user(name):
+    user_id = str(uuid.uuid4())
+    user = {"user_id": user_id, "name": name,"room":None,"point":0}
+    users[user_id] = user
+    return user
+
 #roomに入る処理
 def in_room(user_id,room_id):
-    users[user_id]["room"]=room_id
+    if len(rooms[room_id]) == 4:
+        abort(400, 'this room is empty') 
+    # users[user_id]["room"]=room_id
     rooms[room_id]["users"].append(user_id)
 
 #roomから出る処理
