@@ -3,7 +3,7 @@ from flask import Flask, render_template, jsonify,request, make_response, abort
 from flask_socketio import SocketIO, send, emit
 import uuid
 import random
-import copy
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -169,4 +169,4 @@ def test_result(room_id):
     emit("game_result",{'data':[users[user_id]["point"]for user_id in rooms[room_id]]},broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True, port=int(os.environ.get('PORT', 5000)))
