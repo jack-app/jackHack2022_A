@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template, jsonify,request, make_response, abort
+from numpy import broadcast
 from flask_socketio import SocketIO, send, emit
 import uuid
 import random
@@ -11,8 +12,8 @@ socketio = SocketIO(app)
 user_count = 0
 users = {}
 rooms={}
-musics=[]
-onomatope=[]
+musics=["https://www.youtube.com/embed/rwkLzrK5GLA", "https://www.youtube.com/embed/IFCDLIKSArs", "https://www.youtube.com/embed/qivRUhepWVA", "https://www.youtube.com/embed/q09Gs6e5XVI", "https://www.youtube.com/embed/VfATdDI3604"] # もう少しだけまで https://www.youtube.com/embed/fxE176w8Z90
+onomatope=["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
 
 @app.route('/index')
 def index():
@@ -24,7 +25,7 @@ def room():
     if request.cookies.get('uid') is None:
         name='Anonymous'
         q_name = request.args.get("name")
-        if q_name is None:
+        if q_name is not None:
             name = q_name
         user = create_user(name)
     else:
@@ -33,15 +34,21 @@ def room():
     # roomに入る処理
     room_id = request.args.get("q")
     if room_id not in rooms:
-        rooms[room_id] = {"users": [], "is_game_started": False} #TODO: roomがなければ作っちゃう, 本番でで消す
+        #TODO: 最初にstart_gameされたタイミングでgame_countをインクリメント。毎回選択肢が変われば成功。
+        rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
         # abort(400, 'this room not found') 
     in_room(user["user_id"], room_id)
 
     # roomがゲーム中か否かの処理
     if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
-        content = render_template("room_gaming.html", me=user)
+        room = rooms[room_id]
+        user_candidate_id = random.choice(room["users"])
+        user_candidate = users[user_candidate_id]
+        music_choices = room["games"][room["game_count"]]["music_choices"]
+        print(music_choices)
+        content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices)
     else:    
-        content = render_template("room_waiting.html", me=user)
+        content = render_template("room_waiting.html", me=user, room_id=room_id)
 
     # make_responseでレスポンスオブジェクトを生成する
     response = make_response(content)
@@ -83,10 +90,18 @@ def create_user(name):
 
 #roomに入る処理
 def in_room(user_id,room_id):
-    if len(rooms[room_id]) == 4:
-        abort(400, 'this room is empty') 
+    if user_id in rooms[room_id]["users"]:
+        return
+    if len(rooms[room_id]["users"]) == 4:
+        abort(400, 'this room is full') 
     # users[user_id]["room"]=room_id
     rooms[room_id]["users"].append(user_id)
+
+# roomのゲームを開始する処理
+def room_start_game(room_id):
+    rooms[room_id]["is_game_started"] = True
+    rooms[room_id]["game_count"] += 1
+
 
 #roomから出る処理
 def out_room(user_id,room_id):
@@ -121,7 +136,38 @@ def select_problem():
 
 @socketio.on('message')
 def handle_message(data):
-    print('received message: ' + data)
+    emit("message", data, broadcast=True)
+
+@socketio.on('my event')
+def test_message(message):
+    emit('my response', {'data': message['data']})
+
+@socketio.on('my broadcast event')
+def test_message(message):
+    emit('my response', {'data': message['data']}, broadcast=True)
+
+@socketio.on('connect')
+def test_connect():
+    print("connected")
+    emit('my response', {'data': 'Connected'})
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+
+@socketio.on('user_join')
+def user_join(data):
+    print(users)
+    emit("user_join",users,namespace=f'/room_id-{data["room_id"]}',broadcast=True)
+
+@socketio.on('start_game')
+def start_game(room_id):
+    room_start_game(room_id)
+    emit("start_game",{"data":""},namespace=f'/room_id-{room_id}',broadcast=True)
+
+
+def test_result(room_id):
+    emit("game_result",{'data':[users[user_id]["point"]for user_id in rooms[room_id]]},broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', debug=True)
