@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template, jsonify,request, make_response, abort
+from numpy import broadcast
 from flask_socketio import SocketIO, send, emit
 import uuid
 import random
@@ -121,7 +122,24 @@ def select_problem():
 
 @socketio.on('message')
 def handle_message(data):
-    print('received message: ' + data)
+    emit("message", data, broadcast=True)
+
+@socketio.on('my event')
+def test_message(message):
+    emit('my response', {'data': message['data']})
+
+@socketio.on('my broadcast event')
+def test_message(message):
+    emit('my response', {'data': message['data']}, broadcast=True)
+
+@socketio.on('connect')
+def test_connect():
+    print("connected")
+    emit('my response', {'data': 'Connected'})
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', debug=True)
