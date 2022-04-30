@@ -59,7 +59,10 @@ var socket = io();
   }
   
   function gameStart() {
-    socket.emit('start_game', room_id);
+    fetch(`/make_games?q=${room_id}`).then(response => response.json()).then((data) => {
+      console.log(data)
+      socket.emit('start_game', room_id);
+    })
   }
 
 function getParam(name, url) {

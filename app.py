@@ -34,22 +34,25 @@ def room():
     room_id = request.args.get("q")
     if room_id not in rooms:
         #TODO: 最初にstart_gameされたタイミングでgame_countをインクリメント。毎回選択肢が変われば成功。
+        #TODO: answerを追加しないと。
         rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
         # abort(400, 'this room not found') 
     in_room(user["user_id"], room_id)
 
+    current_room = rooms[room_id]
+
     # roomがゲーム中か否かの処理
     if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
-        room = rooms[room_id]
-        user_candidate_id = random.choice(room["users"])
-        user_candidate = users[user_candidate_id]
-        music_choices = room["games"][room["game_count"]]["music_choices"]
-        print(music_choices)
         is_questioner = False
-        if user_candidate["user_id"] == user["user_id"]:
+        current_game = rooms[room_id]["game_count"]
+        print("##################################################")
+        print(current_room["games"][current_game]["questioner"])
+        print(user["user_id"])
+        print("##################################################")
+        if current_room["games"][current_game]["questioner"] == user["user_id"]:
             is_questioner = True
         image_paths = ["static/image/dan.png", "static/image/dodon.png", "static/image/gyaa.png", "static/image/gaku.png", "static/image/puru.png", "static/image/pon.png", "static/image/dondon.png", "static/image/misimisi.png"]
-        content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices, is_questioner=is_questioner, image_paths=image_paths)
+        content = render_template("room_gaming.html", me=user, questioner=current_room["games"][current_game]["questioner"], music_choices=current_room["games"][current_game]["music_choices"],answer=current_room["games"][current_game]["answer"], is_questioner=is_questioner, image_paths=image_paths)
     else:    
         content = render_template("room_waiting.html", me=user, room_id=room_id)
 
@@ -103,8 +106,11 @@ def in_room(user_id,room_id):
 # roomのゲームを開始する処理
 def room_start_game(room_id):
     rooms[room_id]["is_game_started"] = True
-    rooms[room_id]["game_count"] += 1
 
+#TODO: 回答を集計する
+def calc_answer(room_id, answers):
+    rooms[room_id]["game_count"] += 1
+    print(answers)
 
 #roomから出る処理
 def out_room(user_id,room_id):
@@ -112,15 +118,16 @@ def out_room(user_id,room_id):
     rooms[room_id]["users"].remove(user_id)
 
 #出題者、回答者を決める
-@app.route('/select_answerer')
-def  select_answerer():
+@app.route('/make_games', methods=['GET'])
+def  make_games():
     req = request.args
-    room_id = req.get("rooom_id")
-    users=rooms[room_id]["users"].copy()
-    questioner_id=users.pop()
-    rooms[room_id]["questioner_id"]=questioner_id
-    rooms[room_id]["answererer_id"]=users
-    return jsonify(questioner_id=questioner_id,answerer_id=users)
+    room_id = req.get("q")
+    room = rooms[room_id]
+    for idx, game in enumerate(room["games"]):
+        user_candidate_id = random.choice(room["users"])
+        rooms[room_id]["games"][idx]["questioner"]=user_candidate_id
+        rooms[room_id]["games"][idx]["answer"]=random.sample(game["music_choices"], 1)
+    return jsonify(room_id=room_id)
 
 #お題と選択肢を決める
 @app.route('/select_problem')
