@@ -16,6 +16,10 @@
       document.getElementById("kazyougaki").appendChild(li)
     })
 
+    socket.on("my response", function(message) {
+      console.log(message)
+    })
+
 function buttonClick() {
   socket.emit("message", "hogehoge")
 }
