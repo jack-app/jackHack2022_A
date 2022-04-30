@@ -93,6 +93,8 @@ def in_room(user_id,room_id):
     if len(rooms[room_id]["users"]) == 4:
         abort(400, 'this room is full') 
     # users[user_id]["room"]=room_id
+    if user_id in rooms[room_id]["users"]:
+        return
     rooms[room_id]["users"].append(user_id)
 
 #roomから出る処理
