@@ -45,7 +45,11 @@ def room():
         user_candidate = users[user_candidate_id]
         music_choices = room["games"][room["game_count"]]["music_choices"]
         print(music_choices)
-        content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices)
+        is_questioner = False
+        if user_candidate["user_id"] == user["user_id"]:
+            is_questioner = True
+        image_paths = ["static/image/dan.png", "static/image/dodon.png", "static/image/gyaa.png", "static/image/gaku.png", "static/image/puru.png", "static/image/pon.png", "static/image/dondon.png", "static/image/misimisi.png"]
+        content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices, is_questioner=is_questioner, image_paths=image_paths)
     else:    
         content = render_template("room_waiting.html", me=user, room_id=room_id)
 
@@ -166,6 +170,9 @@ def start_game(room_id):
     room_start_game(room_id)
     emit("start_game",{"data":""},to=room_id,broadcast=True)
 
+@socketio.on('send_onomatopoeia')
+def send_onomatopoeia(data):
+    emit("receive_onomatopoeia", data["img_path"],to=data["room_id"],broadcast=True)
 
 def test_result(room_id):
     emit("game_result",{'data':[users[user_id]["point"]for user_id in rooms[room_id]]},broadcast=True)

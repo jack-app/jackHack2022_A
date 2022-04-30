@@ -1,14 +1,20 @@
 {% extends 'room.html' %}
 
 {% block content %}
-<button onclick="addImage()">オノマトペを追加</button>
+{% if is_questioner == True %}
+<div style="max-height: 30vh; overflow: auto;">
+  {% for image_path in image_paths %}
+  <img src="{{image_path}}" alt="" onclick="imgClick('{{image_path}}')" id="{{image_path}}">
+  {% endfor %}
+</div>
+<button onclick="sendOnomatopoeia()">オノマトペを追加</button>
+{% endif %}
 <div id="images">
-  <img src="/static/image/dan.png" alt="">
+  <!-- <img src="/static/image/dan.png" alt=""> -->
 </div>
 
-<ul id="onomatopoeia">
-  <li>どんどん</li>
-</ul>
+<div id="onomatopoeia">
+</div>
 
 <div id="musics">
   {% for music in music_choices %}
@@ -30,27 +36,29 @@
   //   div.appendChild(iframe)
   // }
 
-  function getImage(){
-    //画像ファイル名を配列で保持
-    var arr = ['/static/image/image.png', '/static/image/image2.png'];
+  // function getImage(){
+  //   //画像ファイル名を配列で保持
+  //   var arr = ['/static/image/image.png', '/static/image/image2.png'];
     
-    //ランダムで画像ファイルを取得して表示する
-    var a = Math.floor(Math.random() * arr.length);
-    return arr[a]
-  }
+  //   //ランダムで画像ファイルを取得して表示する
+  //   var a = Math.floor(Math.random() * arr.length);
+  //   return arr[a]
+  // }
 
-  function addOnomatopoeia() {
-    const ul = document.getElementById("onomatopoeia")
-    new_li = document.createElement("li")
-    new_li.innerHTML = "ぴよぴよ"
-    ul.appendChild(new_li)
-  }
+  // function addOnomatopoeia() {
+  //   const ul = document.getElementById("onomatopoeia")
+  //   new_li = document.createElement("li")
+  //   new_li.innerHTML = "ぴよぴよ"
+  //   ul.appendChild(new_li)
+  // }
 
-  function addImage() {
-    const images = document.getElementById("images")
-    new_image = document.createElement("img")
-    new_image.src = getImage()
-    images.appendChild(new_image)
-  }
+  // function addImage() {
+  //   const images = document.getElementById("images")
+  //   new_image = document.createElement("img")
+  //   new_image.src = getImage()
+  //   images.appendChild(new_image)
+  // }
 </script>
+
+<script src="static/js/room_gaming.js"></script>
 {% endblock %}
