@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template, jsonify,request, make_response, abort
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room
 import uuid
 import random
 import os
@@ -157,12 +157,14 @@ def test_disconnect():
 @socketio.on('user_join')
 def user_join(data):
     print(users)
-    emit("user_join",users,namespace=f'/room_id-{data["room_id"]}',broadcast=True)
+    room_id = data["room_id"]
+    join_room(room_id)
+    emit("user_join",users,to=room_id,broadcast=True)
 
 @socketio.on('start_game')
 def start_game(room_id):
     room_start_game(room_id)
-    emit("start_game",{"data":""},namespace=f'/room_id-{room_id}',broadcast=True)
+    emit("start_game",{"data":""},to=room_id,broadcast=True)
 
 
 def test_result(room_id):

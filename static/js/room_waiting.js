@@ -20,19 +20,19 @@ var socket = io();
     document.getElementById("kazyougaki").appendChild(li)
   })
 
-  roomSocket = io.connect(`http://localhost:5000/room_id-${room_id}`);
-  roomSocket.on("connect", function() {
-    console.log("room connected")
-  })
+  // roomSocket = io.connect(`http://localhost:5000/room_id-${room_id}`);
+  // roomSocket.on("connect", function() {
+  //   console.log("room connected")
+  // })
 
-  roomSocket.on("user_join", function(data) {
+  socket.on("user_join", function(data) {
     console.log(data)
     //TODO: userのDOMを追加
     users_in_room = data
     documentCreateUsers()
   })
 
-  roomSocket.on("start_game", function() {
+  socket.on("start_game", function() {
     // リロードすることでゲームを開始する
     location.reload();
   })
