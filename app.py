@@ -1,6 +1,10 @@
 from flask import Flask, render_template, jsonify
+from flask_socketio import SocketIO
 import uuid
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
 users = []
 
@@ -15,5 +19,9 @@ def user_create():
     print(users)
     return jsonify(user_id=user["user_id"])
 
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + data)
+
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
