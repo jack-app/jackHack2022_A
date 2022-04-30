@@ -1,5 +1,7 @@
 {% extends 'room.html' %}
 
 {% block content %}
-<button>ゲームを開始する</button>
+<button disabled id="game-start-btn" onclick="gameStart()">ゲームを開始する</button>
+
+<script src="static/js/room_waiting.js"></script>
 {% endblock %}

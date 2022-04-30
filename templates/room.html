@@ -3,7 +3,6 @@
 {% block stylesheet%}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/room.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/room.css') }}">
-<script type="text/javascript" src="{{ url_for('static', filename='js/room.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -14,18 +13,10 @@
   </content>
   <p>{{ me["user_id"] }}</p>
 
-  <div class="members">
-    <div class="member-box">
-      user A
-    </div>
-    <div class="member-box">
-      user B
-    </div>
-    <div class="member-box">
-      user C
-    </div>
-    <div class="member-box">
-      user D
-    </div>
+  <div id="members">
   </div>
+
+  <script>
+  
+  </script>
 {% endblock %}

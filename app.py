@@ -25,7 +25,7 @@ def room():
     if request.cookies.get('uid') is None:
         name='Anonymous'
         q_name = request.args.get("name")
-        if q_name is None:
+        if q_name is not None:
             name = q_name
         user = create_user(name)
     else:
@@ -48,7 +48,7 @@ def room():
         print(music_choices)
         content = render_template("room_gaming.html", me=user, questioner=user_candidate, music_choices=music_choices)
     else:    
-        content = render_template("room_waiting.html", me=user)
+        content = render_template("room_waiting.html", me=user, room_id=room_id)
 
     # make_responseでレスポンスオブジェクトを生成する
     response = make_response(content)
@@ -90,10 +90,18 @@ def create_user(name):
 
 #roomに入る処理
 def in_room(user_id,room_id):
+    if user_id in rooms[room_id]["users"]:
+        return
     if len(rooms[room_id]["users"]) == 4:
         abort(400, 'this room is full') 
     # users[user_id]["room"]=room_id
     rooms[room_id]["users"].append(user_id)
+
+# roomのゲームを開始する処理
+def room_start_game(room_id):
+    rooms[room_id]["is_game_started"] = True
+    rooms[room_id]["game_count"] += 1
+
 
 #roomから出る処理
 def out_room(user_id,room_id):
@@ -149,11 +157,13 @@ def test_disconnect():
 
 @socketio.on('user_join')
 def user_join(data):
-    emit("user_join",{"data":users[data["user_id"]]},namespace=f'room_id-{data["room_id"]}',broadcast=True)
+    print(users)
+    emit("user_join",users,namespace=f'/room_id-{data["room_id"]}',broadcast=True)
 
 @socketio.on('start_game')
 def start_game(room_id):
-    emit("start_game",{"data":""},namespace=f'room_id-{room_id}',broadcast=True)
+    room_start_game(room_id)
+    emit("start_game",{"data":""},namespace=f'/room_id-{room_id}',broadcast=True)
 
 
 def test_result(room_id):
