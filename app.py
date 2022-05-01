@@ -15,7 +15,48 @@ socketio = SocketIO(app)
 user_count = 0
 users = {}
 rooms={}
-musics=[{ "name": "怪盗", "id": "https://www.youtube.com/embed/rwkLzrK5GLA" }, {"name": "きらり", "id": "https://www.youtube.com/embed/IFCDLIKSArs"}, {"name": "怪物", "id": "https://www.youtube.com/embed/qivRUhepWVA"}, {"name": "YOKAZE", "id": "https://www.youtube.com/embed/q09Gs6e5XVI"}, {"name": "もう少しだけ", "id": "https://www.youtube.com/embed/VfATdDI3604"}] # もう少しだけまで https://www.youtube.com/embed/fxE176w8Z90
+musics=musics =[
+{"name": "怪盗",   "id": "https://www.youtube.com/embed/rwkLzrK5GLA" },
+{"name": "きらり", "id": "https://www.youtube.com/embed/IFCDLIKSArs"},
+{"name": "怪物",   "id": "https://www.youtube.com/embed/qivRUhepWVA"},
+{"name": "YOKAZE",     "id": "https://www.youtube.com/embed/q09Gs6e5XVI"},
+{"name": "もう少しだけ", "id": "https://www.youtube.com/embed/VfATdDI3604"},
+{"name": "ペテルギウス", "id": "https://www.youtube.com/embed/cbqvxDTLMps"},
+{"name": "ドライフラワー", "id": "https://www.youtube.com/embed/X-YtmD0YsBA" },
+{"name": "Lemon", "id": "https://www.youtube.com/embed/SX_ViT4Ra7k"},
+{"name": "Happiness", "id": "https://www.youtube.com/embed/HeXVJvEYynw"},
+{"name": "さよならエレジー", "id": "https://www.youtube.com/embed/XSkpuDseenY"},
+{"name": "天体観測", "id": "https://www.youtube.com/embed/j7CDb610Bg0"},
+{"name": "マリーゴールド", "id": "https://www.youtube.com/embed/0xSiBpUdW4E" },
+{"name": "勿忘", "id": "https://www.youtube.com/embed/zkZARKFuzNQ"},
+{"name": "CITRUS", "id": "https://www.youtube.com/embed/ye1YacA8HvE" },
+{"name": "裸の心", "id": "https://www.youtube.com/embed/yOAwvRmVIyo"},
+{"name": "虹", "id": "https://www.youtube.com/embed/hkBbUf4oGfA"},
+{"name": "ギラギラ", "id": "https://www.youtube.com/embed/sOiMD45QGLs"},
+{"name": "うっせぇわ", "id": "https://www.youtube.com/embed/Qp3b-RXtz4w" },
+{"name": "カイト", "id": "https://www.youtube.com/embed/mTMs1S5td74"},
+{"name": "YELL", "id": "https://www.youtube.com/embed/lz8frtP6_kk"},
+{"name": "SAKURA", "id": "https://www.youtube.com/embed/61z-cqg28R8"},
+{"name": "猫", "id": "https://www.youtube.com/embed/TwiEL7bUmAI" },
+{"name": "奏", "id": "https://www.youtube.com/embed/J5Z7tIq7bco"},
+{"name": "ボクノート", "id": "https://www.youtube.com/embed/AeMRXJtg500"},
+{"name": "桜坂",         "id": "https://www.youtube.com/embed/AGYJ6jeu3p8"},
+{"name": "家族になろうよ", "id": "https://www.youtube.com/embed/vrkbf9CVkn4"},
+{"name": "恋",           "id": "https://www.youtube.com/embed/jhOVibLEDhA"},
+{"name":"新宝島","id":"https://www.youtube.com/embed/LIlZCmETvsY"},
+{"name":"前前前世","id":"https://www.youtube.com/embed/PDSkFeMVNFs"},
+{"name":"シルエット","id":"https://www.youtube.com/embed/ZFoJYI7Q4iA"},
+{"name":"インフェルノ","id":"https://www.youtube.com/embed/wfCcs0vLysk"},
+{"name":"廻廻奇譚","id":"https://www.youtube.com/embed/1tk1pqwrOys" },
+{"name":"白日","id":"https://www.youtube.com/embed/ony539T074w" },
+{"name":"シャルル","id":"https://www.youtube.com/embed/VUIEJu4ZSUo"},
+{"name": "Call Me Maybe", "id": "https://www.youtube.com/embed/fWNaR-rxAic"},
+{"name": "初心LOVE" , "id": "https://www.youtube.com/embed/qNrRnnG8glY"},
+{"name": "ロマンスの神様" , "id": "https://www.youtube.com/embed/T8yZWCg85Cs"},
+{"name": "気まぐれロマンティック" , "id": "https://www.youtube.com/embed/5XCSt_0lwOE"},
+{"name": "ヘビーローテーション" , "id": "https://www.youtube.com/embed/lkHlnWFnA0c"},
+{"name": "勇気りんりん" , "id": "https://www.youtube.com/embed/GRG9WlqRfWY"},
+]
 image_paths=["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
 
 @app.route('/index')
