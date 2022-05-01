@@ -72,10 +72,20 @@ def room_create():
 def user_answer():
     req = request.args
     user_id = req.get("user_id")
+    idx=req.get("idx")
     answer=req.get('answer')
     if answer==rooms[users[user_id]["room"]]['answer']:
         users[user_id]["point"]+=1
-    return jsonify(right_or_wrong=(answer==rooms[users[user_id]["room"]]['answer']))
+    return jsonify(right_or_wrong=(answer==rooms[users[user_id]["room"]]["games"][idx]["answer"]))
+
+#次の問題に移動
+@app.route('/next_problem')
+def next_problem():
+    req=request.args
+    room_id=req.get("room_id")
+    rooms[room_id]["game_count"]+=1
+
+
 
 #オノマトペの選択
 @app.route('/select_onomatopoeia')
