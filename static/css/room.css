@@ -1,7 +1,11 @@
 .member-box {
   border: 1px solid;
+  border-radius: 5%;
+  margin: 5px;
+  padding: 2px;
+  width: 25vw;
 }
 
-.members {
+#members {
   display: flex;
 }

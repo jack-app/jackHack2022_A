@@ -44,19 +44,22 @@ def room():
         #TODO: answerを追加しないと。
         rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
         # abort(400, 'this room not found') 
-    in_room(user["user_id"], room_id)
+    in_room(user, room_id)
 
     current_room = rooms[room_id]
+    members = rooms[room_id]["users"]
+    # print(members)
 
     # roomがゲーム中か否かの処理
     if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
         is_questioner = False
         current_game = rooms[room_id]["game_count"]
-        if current_room["games"][current_game]["questioner"] == user["user_id"]:
+
+        if current_room["games"][current_game]["questioner"]["user_id"] == user["user_id"]:
             is_questioner = True
-        content = render_template("room_gaming.html", me=user, questioner=current_room["games"][current_game]["questioner"], music_choices=current_room["games"][current_game]["music_choices"],answer=current_room["games"][current_game]["answer"], is_questioner=is_questioner, image_paths=image_paths)
+        content = render_template("room_gaming.html", members=members, me=user, questioner=current_room["games"][current_game]["questioner"], music_choices=current_room["games"][current_game]["music_choices"],answer=current_room["games"][current_game]["answer"], is_questioner=is_questioner, image_paths=image_paths)
     else:    
-        content = render_template("room_waiting.html", me=user, room_id=room_id)
+        content = render_template("room_waiting.html", members=members,me=user, room_id=room_id)
 
     # make_responseでレスポンスオブジェクトを生成する
     response = make_response(content)
@@ -90,7 +93,7 @@ def user_answer():
         users[user_id]["point"]+=1
 
     is_end = False
-    print(rooms[room_id]["games"][game_count]['choice_count'])
+    # print(rooms[room_id]["games"][game_count]['choice_count'])
     if rooms[room_id]["games"][game_count]['choice_count'] == 3:
         is_end = True
     selected_answer = next(item for item in musics if item["id"] == selected_answer_id)
@@ -107,6 +110,7 @@ def next_problem():
         return jsonify(users=users)
     rooms[room_id]["game_count"]+=1
     socketio.emit("move_next", to=room_id, broadcast=True)
+    return jsonify(hoge="users")
 
 
 
@@ -123,13 +127,13 @@ def create_user(name):
     return user
 
 #roomに入る処理
-def in_room(user_id,room_id):
-    if user_id in rooms[room_id]["users"]:
+def in_room(user,room_id):
+    if user in rooms[room_id]["users"]:
         return
     if len(rooms[room_id]["users"]) >= 4:
         abort(400, 'this room is full') 
-    # users[user_id]["room"]=room_id
-    rooms[room_id]["users"].append(user_id)
+    # users[user]["room"]=room_id
+    rooms[room_id]["users"].append(user)
 
 # roomのゲームを開始する処理
 def room_start_game(room_id):
@@ -195,7 +199,6 @@ def test_disconnect():
 
 @socketio.on('user_join')
 def user_join(data):
-    print(users)
     room_id = data["room_id"]
     join_room(room_id)
     emit("user_join",users,to=room_id,broadcast=True)
