@@ -36,7 +36,7 @@ var socket = io();
     if (data["is_correct"]) {
       // まるまるさんが正解しました！次の問題へボタン
       let top = document.getElementById("top-text")
-      top.innerHTML = `${data["user"]["name"]}さんが正解しました！正解は${data["answer"]}でした！`
+      top.innerHTML = `${data["user"]["name"]}さんが正解しました！正解は「${data["answer"]["name"]}」でした！`
       const button = document.createElement("button")
       button.innerHTML = '次の問題へ';
       console.log(button)
@@ -48,10 +48,10 @@ var socket = io();
       // まるまるさんがまるまるを洗濯しました。不正解です。
       let top = document.getElementById("top-text")
       // オノマトペを洗濯中。
-      top.innerHTML = `${data["user"]["name"]}さん不正解！${data["answer"]}ではありません！`
+      top.innerHTML = `${data["user"]["name"]}さん不正解！「${data["answer"]["name"]}」ではありません！`
 
       if (data["is_end"]) {
-        top.innerHTML += `正解は${data["correct_answer"]}です！`
+        top.innerHTML += `正解は「${data["correct_answer"]["name"]}」でした！`
         const button = document.createElement("button")
         button.innerHTML = '次の問題へ';
         console.log(button)

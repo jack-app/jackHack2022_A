@@ -15,7 +15,7 @@ socketio = SocketIO(app)
 user_count = 0
 users = {}
 rooms={}
-musics=["https://www.youtube.com/embed/rwkLzrK5GLA", "https://www.youtube.com/embed/IFCDLIKSArs", "https://www.youtube.com/embed/qivRUhepWVA", "https://www.youtube.com/embed/q09Gs6e5XVI", "https://www.youtube.com/embed/VfATdDI3604"] # もう少しだけまで https://www.youtube.com/embed/fxE176w8Z90
+musics=[{ "name": "怪盗", "id": "https://www.youtube.com/embed/rwkLzrK5GLA" }, {"name": "きらり", "id": "https://www.youtube.com/embed/IFCDLIKSArs"}, {"name": "怪物", "id": "https://www.youtube.com/embed/qivRUhepWVA"}, {"name": "YOKAZE", "id": "https://www.youtube.com/embed/q09Gs6e5XVI"}, {"name": "もう少しだけ", "id": "https://www.youtube.com/embed/VfATdDI3604"}] # もう少しだけまで https://www.youtube.com/embed/fxE176w8Z90
 image_paths=["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
 
 @app.route('/index')
@@ -68,11 +68,11 @@ def room():
 
     return response
 
-#ルームを作成
-@app.route('/room_create')
-def room_create():
-    room_id = uuid.uuid4()
-    rooms[room_id]={ "users":[],"questioner_id":"","answerer_id":[],"answer":""} 
+# #ルームを作成
+# @app.route('/room_create')
+# def room_create():
+#     room_id = uuid.uuid4()
+#     rooms[room_id]={ "users":[],"questioner_id":"","answerer_id":[],"answer":""} 
 
 #解答の判定
 @app.route('/user_answer')
@@ -83,17 +83,19 @@ def user_answer():
     user = users[user_id]
     room = rooms[room_id]
     game_count = room["game_count"]
-    selected_answer = req.get('selected_answer')
-    correct_answer = room["games"][game_count]['answer']
+    selected_answer_id = req.get('selected_answer')
+    correct_answer_id = room["games"][game_count]['answer']["id"]
     rooms[room_id]["games"][game_count]['choice_count'] += 1
-    if selected_answer==correct_answer:
+    if selected_answer_id==correct_answer_id:
         users[user_id]["point"]+=1
 
     is_end = False
     print(rooms[room_id]["games"][game_count]['choice_count'])
     if rooms[room_id]["games"][game_count]['choice_count'] == 3:
         is_end = True
-    socketio.emit('answered', {'user': user, "answer": selected_answer, "is_correct": (selected_answer==correct_answer), "is_end": is_end, "correct_answer": correct_answer}, to=room_id, broadcast=True)
+    selected_answer = next(item for item in musics if item["id"] == selected_answer_id)
+    correct_answer = room["games"][game_count]['answer']
+    socketio.emit('answered', {'user': user, "answer": selected_answer, "is_correct": (selected_answer_id==correct_answer_id), "is_end": is_end, "correct_answer": correct_answer}, to=room_id, broadcast=True)
     return jsonify(right_or_wrong=(selected_answer==correct_answer))
 
 #次の問題に移動
@@ -133,10 +135,10 @@ def in_room(user_id,room_id):
 def room_start_game(room_id):
     rooms[room_id]["is_game_started"] = True
 
-#TODO: 回答を集計する
-def calc_answer(room_id, answers):
-    rooms[room_id]["game_count"] += 1
-    print(answers)
+# #TODO: 回答を集計する
+# def calc_answer(room_id, answers):
+#     rooms[room_id]["game_count"] += 1
+#     print(answers)
 
 #roomから出る処理
 def out_room(user_id,room_id):
@@ -155,20 +157,20 @@ def  make_games():
         rooms[room_id]["games"][idx]["answer"]=random.sample(game["music_choices"], 1)[0]
     return jsonify(room_id=room_id)
 
-#お題と選択肢を決める
-@app.route('/select_problem')
-def select_problem():
-    req = request.args
-    room_id = req.get("rooom_id")
-    answer=random.choice(musics)
-    choices=[]
-    while choices!=[]:
-        choice=random.sample(musics,3)
-        if answer not in choice:
-            choices=choice
-    choices.insert(random.randint(0,4))
-    rooms[room_id]["answer"]=answer
-    return jsonify(answer=answer,choices=choices)
+# #お題と選択肢を決める
+# @app.route('/select_problem')
+# def select_problem():
+#     req = request.args
+#     room_id = req.get("rooom_id")
+#     answer=random.choice(musics)
+#     choices=[]
+#     while choices!=[]:
+#         choice=random.sample(musics,3)
+#         if answer not in choice:
+#             choices=choice
+#     choices.insert(random.randint(0,4))
+#     rooms[room_id]["answer"]=answer
+#     return jsonify(answer=answer,choices=choices)
 
 @socketio.on('message')
 def handle_message(data):

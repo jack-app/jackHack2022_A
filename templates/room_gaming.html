@@ -8,8 +8,8 @@
   {% endfor %}
 </div>
 <button onclick="sendOnomatopoeia()">オノマトペを追加</button>
-<p>お題</p>
-<iframe width="150" height="100" src="{{answer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>お題: {{answer["name"]}}</p>
+<iframe width="150" height="100" src="{{answer['id']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {% endif %}
 <p>選んでね！</p>
 <div id="images">
@@ -27,10 +27,11 @@
   {% for music in music_choices %}
   <div>
     <div style="padding: 3px 3px;">
-      <iframe width="150" height="100" src="{{music}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <p>{{music["name"]}}</p>
+      <iframe width="150" height="100" src="{{music['id']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
     {% if is_questioner == False %}
-    <input type="radio" value="{{music}}" name="music" style="margin: 0 auto; width: 100%;"></input>
+    <input type="radio" value="{{music['id']}}" name="music" style="margin: 0 auto; width: 100%;"></input>
     {% endif %}
   </div>
   {% endfor %}
