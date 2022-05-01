@@ -4,6 +4,10 @@ from flask_socketio import SocketIO, send, emit, join_room
 import uuid
 import random
 import os
+from faker import Faker
+
+fake = Faker()
+
 
 from numpy import broadcast
 
@@ -24,12 +28,15 @@ def index():
 def room():
     # userの登録処理
     if request.cookies.get('uid') is None:
-        name='Anonymous'
+        name=fake.name()
         q_name = request.args.get("name")
         if q_name is not None:
             name = q_name
         user = create_user(name)
     else:
+        q_name = request.args.get("name")
+        if q_name is not None:
+            users[request.cookies.get('uid')]["name"] = q_name
         user = users[request.cookies.get('uid')]
     
     # roomに入る処理
