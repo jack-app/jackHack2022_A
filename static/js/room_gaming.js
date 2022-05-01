@@ -1,4 +1,4 @@
-const image_paths = ["static/image/dan.png", "static/image/dodon.png", "static/image/gyaa.png", "static/image/gaku.png", "static/image/puru.png", "static/image/pon.png", "static/image/dondon.png", "static/image/misimisi.png"]
+const image_paths = ["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
 let answerer_selected = ""
 
 let questioner_selected_img = ""
@@ -21,6 +21,7 @@ var socket = io();
     var img = document.createElement('img');
     img.src = img_path;
     document.getElementById("onomatopoeia").appendChild(img)
+    // setCounter()
   })
 
   socket.on("start_game", function() {
@@ -52,6 +53,7 @@ function addOnomatopoeia(img_path) {
 function imgClick(selected_img_path) {
   questioner_selected_img = selected_img_path
   image_paths.map((image_path) => {
+    console.log(image_path)
     const chosen_image =  document.getElementById(image_path)
     if (image_path == selected_img_path) {
       chosen_image.style.outline = "solid red"
@@ -73,8 +75,12 @@ function selected(pass) {
   if (pass == "pass") {
     answerer_selected = pass
   }
-  
+
   document.getElementById("set-btn").disabled = true
   document.getElementById("pass-btn").disabled = true
 
 }
+
+// function setCounter() {
+
+// }
