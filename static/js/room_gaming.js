@@ -21,13 +21,60 @@ var socket = io();
     var img = document.createElement('img');
     img.src = img_path;
     document.getElementById("onomatopoeia").appendChild(img)
-    // setCounter()
+    is_answered = false
+    setCounter()
   })
 
   socket.on("start_game", function() {
     // リロードすることでゲームを開始する
     location.reload();
   })
+
+  let is_answered = false
+  socket.on("answered", function(data) {
+    is_answered = true
+    if (data["is_correct"]) {
+      // まるまるさんが正解しました！次の問題へボタン
+      let top = document.getElementById("top-text")
+      top.innerHTML = `${data["user"]["name"]}さんが正解しました！正解は${data["answer"]}でした！`
+      const button = document.createElement("button")
+      button.innerHTML = '次の問題へ';
+      console.log(button)
+      button.onclick = function(){
+        moveNextProblem()
+      };
+      document.getElementById("main-content").appendChild(button)
+    } else {
+      // まるまるさんがまるまるを洗濯しました。不正解です。
+      let top = document.getElementById("top-text")
+      // オノマトペを洗濯中。
+      top.innerHTML = `${data["user"]["name"]}さん不正解！${data["answer"]}ではありません！`
+
+      if (data["is_end"]) {
+        top.innerHTML += `正解は${data["correct_answer"]}です！`
+        const button = document.createElement("button")
+        button.innerHTML = '次の問題へ';
+        console.log(button)
+        button.onclick = function(){
+          moveNextProblem()
+        };
+        document.getElementById("main-content").appendChild(button)
+      } else {
+        top.innerHTML += "オノマトペ選択中"
+      }
+    }
+  })
+
+  socket.on("move_next", ()=>{
+    location.reload()
+  })
+
+  function moveNextProblem() {
+    fetch(`/next_problem?room_id=${room_id}`).then(response => response.json()).then((data) => {
+      // TODO: 最後の問題の時の条件分岐
+      console.log(data)
+    })
+  }
 
   function sendOnomatopoeia() {
     socket.emit('send_onomatopoeia', {img_path: questioner_selected_img, room_id: room_id})
@@ -72,15 +119,23 @@ function selected(pass) {
     element.disabled = "disabled"
   });
 
-  if (pass == "pass") {
-    answerer_selected = pass
-  }
-
   document.getElementById("set-btn").disabled = true
-  document.getElementById("pass-btn").disabled = true
 
+  fetch(`/user_answer?room_id=${room_id}&user_id=${user_id}&selected_answer=${answerer_selected}`).then(response => response.json()).then((data) => {
+    console.log(data)
+    // socket.emit('start_game', room_id);
+  })
 }
 
-// function setCounter() {
-
-// }
+function setCounter() {
+  let top = document.getElementById("top-text")
+  let timer = 60
+  let timerId = setInterval(() => {
+    if (timer <= 0 || is_answered) {
+      clearInterval(timerId)
+    } else {
+      top.innerHTML = `残り時間 ${timer}s`
+      timer--
+    }
+  }, 1000)
+}
