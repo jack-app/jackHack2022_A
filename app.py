@@ -88,6 +88,8 @@ def user_answer():
 def next_problem():
     req=request.args
     room_id=req.get("room_id")
+    if rooms[room_id]["game_count"]==4:
+        return jsonify(users=users)
     rooms[room_id]["game_count"]+=1
 
 
