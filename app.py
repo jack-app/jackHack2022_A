@@ -72,11 +72,16 @@ def room_create():
 def user_answer():
     req = request.args
     user_id = req.get("user_id")
-    idx=req.get("idx")
-    answer=req.get('answer')
-    if answer==rooms[users[user_id]["room"]]['answer']:
+    room_id = req.get("room_id")
+    user = users[user_id]
+    room = rooms[room_id]
+    game_count = room["game_count"]
+    selected_answer = req.get('selected_answer')
+    correct_answer = room["games"][game_count]['answer']
+    if selected_answer==correct_answer:
         users[user_id]["point"]+=1
-    return jsonify(right_or_wrong=(answer==rooms[users[user_id]["room"]]["games"][idx]["answer"]))
+    emit('answered', {'user': user, "answer": selected_answer, "is_correct": (selected_answer==correct_answer)}, to=room_id, broadcast=True)
+    return jsonify(right_or_wrong=(selected_answer==correct_answer))
 
 #次の問題に移動
 @app.route('/next_problem')
