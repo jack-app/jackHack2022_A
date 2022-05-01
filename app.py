@@ -5,6 +5,8 @@ import uuid
 import random
 import os
 
+from numpy import broadcast
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -35,7 +37,7 @@ def room():
     if room_id not in rooms:
         #TODO: 最初にstart_gameされたタイミングでgame_countをインクリメント。毎回選択肢が変われば成功。
         #TODO: answerを追加しないと。
-        rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
+        rooms[room_id] = {"users": [], "is_game_started": False, "game_count": 0, "games": [{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4), "choice_count": 0},{"music_choices": random.sample(musics, 4)},]} #TODO: roomがなければ作っちゃう, 本番でで消す # ゲームの数は現状最大五個
         # abort(400, 'this room not found') 
     in_room(user["user_id"], room_id)
 
@@ -78,9 +80,15 @@ def user_answer():
     game_count = room["game_count"]
     selected_answer = req.get('selected_answer')
     correct_answer = room["games"][game_count]['answer']
+    rooms[room_id]["games"][game_count]['choice_count'] += 1
     if selected_answer==correct_answer:
         users[user_id]["point"]+=1
-    emit('answered', {'user': user, "answer": selected_answer, "is_correct": (selected_answer==correct_answer)}, to=room_id, broadcast=True)
+
+    is_end = False
+    print(rooms[room_id]["games"][game_count]['choice_count'])
+    if rooms[room_id]["games"][game_count]['choice_count'] == 3:
+        is_end = True
+    socketio.emit('answered', {'user': user, "answer": selected_answer, "is_correct": (selected_answer==correct_answer), "is_end": is_end, "correct_answer": correct_answer}, to=room_id, broadcast=True)
     return jsonify(right_or_wrong=(selected_answer==correct_answer))
 
 #次の問題に移動
@@ -91,6 +99,7 @@ def next_problem():
     if rooms[room_id]["game_count"]==4:
         return jsonify(users=users)
     rooms[room_id]["game_count"]+=1
+    socketio.emit("move_next", to=room_id, broadcast=True)
 
 
 
