@@ -8,7 +8,10 @@
   {% endfor %}
 </div>
 <button onclick="sendOnomatopoeia()">オノマトペを追加</button>
+<p>お題</p>
+<iframe width="150" height="100" src="{{answer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {% endif %}
+<p>選んでね！</p>
 <div id="images">
   <!-- <img src="/static/image/dan.png" alt=""> -->
 </div>
@@ -16,11 +19,24 @@
 <div id="onomatopoeia">
 </div>
 
-<div id="musics">
+<form id="musics" style="display: flex; flex-wrap: wrap;">
   {% for music in music_choices %}
-  <iframe width="150" height="100" src="{{music}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <div>
+    <div style="padding: 3px 3px;">
+      <iframe width="150" height="100" src="{{music}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    {% if is_questioner == False %}
+    <input type="radio" value="{{music}}" name="music" style="margin: 0 auto; width: 100%;"></input>
+    {% endif %}
+  </div>
   {% endfor %}
-</div>
+  </form>
+  {% if is_questioner == False %}
+  <div>
+    <button id="pass-btn" onclick="selected('pass')" style="background-color: blanchedalmond;">パス！</button>
+    <button id="set-btn" onclick="selected()" style="background-color: aquamarine;">これに決めた！</button>
+  </div>
+  {% endif %}
 
 <script>
   // insertMusics()

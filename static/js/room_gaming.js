@@ -1,4 +1,5 @@
 const image_paths = ["static/image/dan.png", "static/image/dodon.png", "static/image/gyaa.png", "static/image/gaku.png", "static/image/puru.png", "static/image/pon.png", "static/image/dondon.png", "static/image/misimisi.png"]
+let answerer_selected = ""
 
 let questioner_selected_img = ""
 var socket = io();
@@ -58,4 +59,22 @@ function imgClick(selected_img_path) {
       chosen_image.style.outline = ""
     }
   })
+}
+
+function selected(pass) {
+  const musics = document.getElementById("musics")
+  const radioNodeList = musics.music 
+  answerer_selected = radioNodeList.value
+
+  radioNodeList.forEach(element => {
+    element.disabled = "disabled"
+  });
+
+  if (pass == "pass") {
+    answerer_selected = pass
+  }
+  
+  document.getElementById("set-btn").disabled = true
+  document.getElementById("pass-btn").disabled = true
+
 }

@@ -45,10 +45,6 @@ def room():
     if rooms[room_id]["is_game_started"] == True or request.args.get("start") is not None: #TODO: デバッグようなので後で消すstartがクエリパラメータに含まれていたらgame画面へ
         is_questioner = False
         current_game = rooms[room_id]["game_count"]
-        print("##################################################")
-        print(current_room["games"][current_game]["questioner"])
-        print(user["user_id"])
-        print("##################################################")
         if current_room["games"][current_game]["questioner"] == user["user_id"]:
             is_questioner = True
         content = render_template("room_gaming.html", me=user, questioner=current_room["games"][current_game]["questioner"], music_choices=current_room["games"][current_game]["music_choices"],answer=current_room["games"][current_game]["answer"], is_questioner=is_questioner, image_paths=image_paths)
@@ -125,7 +121,7 @@ def  make_games():
     for idx, game in enumerate(room["games"]):
         user_candidate_id = random.choice(room["users"])
         rooms[room_id]["games"][idx]["questioner"]=user_candidate_id
-        rooms[room_id]["games"][idx]["answer"]=random.sample(game["music_choices"], 1)
+        rooms[room_id]["games"][idx]["answer"]=random.sample(game["music_choices"], 1)[0]
     return jsonify(room_id=room_id)
 
 #お題と選択肢を決める
