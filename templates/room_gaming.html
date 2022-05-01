@@ -7,7 +7,7 @@
   <img src="{{image_path}}" alt="" onclick="imgClick('{{image_path}}')" id="{{image_path}}">
   {% endfor %}
 </div>
-<button onclick="sendOnomatopoeia()">オノマトペを追加</button>
+<button onclick="sendOnomatopoeia()" class="sendbutton">オノマトペを追加</button>
 <p>お題: {{answer["name"]}}</p>
 <iframe width="150" height="100" src="{{answer['id']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {% endif %}
