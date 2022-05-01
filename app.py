@@ -57,7 +57,7 @@ musics=musics =[
 {"name": "ヘビーローテーション" , "id": "https://www.youtube.com/embed/lkHlnWFnA0c"},
 {"name": "勇気りんりん" , "id": "https://www.youtube.com/embed/GRG9WlqRfWY"},
 ]
-image_paths=["/static/image/dan.png", "/static/image/dodon.png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/pon.png", "/static/image/dondon.png", "/static/image/misimisi.png"]
+image_paths=["/static/image", "/static/image/image (5).png", "/static/image/image (10).png", "/static/image/image (9).png", "/static/image/dan.png", "/static/image/dodon.png", "/static/image/image (8).png", "/static/image/image (11).png", "/static/image/image (4).png", "/static/image/image (16).png", "/static/image/gyaa.png", "/static/image/gaku.png", "/static/image/puru.png", "/static/image/image (20).png", "/static/image/image (3).png", "/static/image/image (21).png", "/static/image/image (2).png", "/static/image/pon.png", "/static/image/image (17).png", "/static/image/image (14).png", "/static/image/dondon.png", "/static/image/image (1).png", "/static/image/image (22).png", "/static/image/image (18).png", "/static/image/image (19).png", "/static/image/image (23).png", "/static/image/image (15).png", "/static/image/image (7).png", "/static/image/image (12).png", "/static/image/image (13).png", "/static/image/misimisi.png", "/static/image/image (6).png"]
 
 @app.route('/index')
 def index():
